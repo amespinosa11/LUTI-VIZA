@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+  <style>
+  .body {
+    background-color: #F5F5DC;
+  }
+  .tract {
+    fill: #B0E0E6;
+  }
+  .selected {
+    fill: #FF7F50;
+  }
+  .tract:hover {
+    fill: #FF7F50;
+  }
+  .info {
+    margin-top: 20px;
+  }
+  canvas {
+  width: 100%;
+  background-color: white;
+}
+
+
+  </style>
+
+
+  <title>LUTI-VIZA</title>
+
+</head>
+<body>
+  <div class="container">
+    <div class="info">
+      <h3>¿Cómo se comporta la distribución del CO2, el Material Particulado(PM) y otras variables 
+      en las diferentes zonas en Bogotá?</h3>
+      <p>A continuación se muestra un mapa de Bogotá dividido por barrios y al oprimir sobre un
+        barrio se puede observar la distribución de estas variables en esta zona. También se puede utilizar la barra de
+        busqueda para encontrar un barrio por su nombre. Los datos del mapa de Bogotá son sacados de la página de Uber(<a href="https://movement.uber.com/explore/bogota/travel-times/query?ag=cadastral&cd=&dt%5Bdr%5D%5Bed%5D=2018-01-31&dt%5Bdr%5D%5Bsd%5D=2018-01-01&dt%5Btpb%5D=ALL_DAY&dt%5Bwd%3B%5D=1%2C2%2C3%2C4%2C5%2C6%2C7&lang=es-CO&lat.=4.598056&lng.=-74.075833&sa%3B=&sdn=&si=183&ti=&z.=12">Uber Movements Bogota</a>). Los datos de la distribución de las variables en cada zona se generan aleatoriamente.</p>
+        <div class="row">
+          <div class="col-4">
+            <input id="searchInput" class="form-control" type="text" name="zone" placeholder="Buscar por nombre">
+          </div>
+          <div class="col-4">
+            <button id="searchButton" class="btn btn-dark">Buscar</button>
+          </div>
+          <div class="col-4"></div>
+        </div>
+    </div>
+    <!-- MAP CONTAINER -->
+    <svg></svg>
+    <div id="zone-name"></div>
+    <canvas id="myCanvas" resize="true"></canvas>
+  </div>
+  
+  
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  <!-- Define inlined PaperScript associate it with myCanvas -->
+  <script type="text/javascript" src="lib/paper-full.js"></script>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script>
+
+    paper.install(window);
+
+    var canvas = document.getElementById('myCanvas');
+    paper.setup(canvas);
+    
+    function createCircle(){
+      //POINTS
+      var maxPoint = new paper.Point(500,100),
+          maxPoint2 = new paper.Point(700,250),
+          maxPoint3 = new paper.Point(500,400),
+          maxPoint4 = new paper.Point(300,250);
+      // RANDOM NUMBERS
+      var random1 = Math.floor(Math.random() * (70 - 40)) + 40;    
+      var random2 = Math.floor(Math.random() * (70 - 40)) + 40;      
+      var random3 = Math.floor(Math.random() * (70 - 40)) + 40;      
+      var random4 = Math.floor(Math.random() * (70 - 40)) + 40;      
+      // CIRCLES
+      var newCircle = new Path.Circle(maxPoint,random1),
+          newCircle2 = new Path.Circle(maxPoint2, random2),
+          newCircle3 = new Path.Circle(maxPoint3, random3),
+          newCircle4 = new Path.Circle(maxPoint4, random4);
+      newCircle.fillColor = "#63D1F4";
+      newCircle2.fillColor = "#FFFF99";
+      newCircle3.fillColor = "#3CB371";
+      newCircle4.fillColor = "#DDA0DD";
+      // TEXT    
+      var conventions = new paper.PointText(new paper.Point(30,20));
+      var textItem = new paper.PointText(new paper.Point(470,100));
+      var textItem2 = new paper.PointText(new paper.Point(675,250));
+      var textItem3 = new paper.PointText(new paper.Point(475,400));
+      var textItem4 = new paper.PointText(new paper.Point(275,250));
+      textItem.content = 'CO2: ' +  random1; 
+      textItem.style = {
+          fontFamily: 'sans-serif',
+          fontWeight: 'bold',
+          fontSize: 15,
+          fillColor: '#2F4F4F'
+      }; 
+      textItem2.content = 'PM: ' +  random2;
+      textItem2.style = {
+          fontFamily: 'sans-serif',
+          fontWeight: 'bold',
+          fontSize: 15,
+          fillColor: '#2F4F4F'
+      };   
+      textItem3.content = 'GAS: ' +  random3;
+      textItem3.style = {
+          fontFamily: 'sans-serif',
+          fontWeight: 'bold',
+          fontSize: 15,
+          fillColor: '#2F4F4F'
+      };   
+      textItem4.content = 'AC: ' +  random4;  
+      textItem4.style = {
+          fontFamily: 'sans-serif',
+          fontWeight: 'bold',
+          fontSize: 15,
+          fillColor: '#2F4F4F'
+      }; 
+      paper.view.draw();
+    }
+    
+
+  var svg = d3.select("svg");
+  const width = 1000;
+  const height = 500;
+  const margin = { top: 100, bottom:20, right: 10, left: 10};
+  const ul = d3.select("#zone-name");
+
+  const path = d3.geoPath();
+  var projection = d3.geoTransverseMercator();
+
+  d3.json("bogota_cadastral.json", function(error, data) {
+    if (error) throw error;
+
+    svg.style("width",width);
+    svg.style("height",height);
+  
+    path.projection(projection.rotate([0,0,-40]));
+    path.projection(projection.fitSize([width, height], data));
+    
+
+    svg.selectAll("path")
+      .data(data.features)
+      .enter().append("path")
+        .attr("class", "tract")
+        .attr("d", path)  
+      .append("title")
+        .text(function(d) { 
+         return d.properties.scanombre;
+          });
+
+    svg.selectAll("path").on("click", function(d){
+        ul.html("<h3>"+ d.properties.scanombre + "</h3>");
+        svg.selectAll("path").attr("class","tract");
+        d3.select(this).attr("class","selected");
+        createCircle();
+      });      
+
+  //console.log(svg.selectAll("path").length);
+    svg.selectAll(".tract-border")
+      .data(data.features)
+      .enter()
+      .append("path")
+      .style("fill","none")
+      .style("stroke","#528B8B")
+        .attr("d", path);
+
+  var searchButton = document.querySelector("#searchButton");
+  var searchInput = document.querySelector("#searchInput");
+  var errorMessage = document.querySelector("#errorMessage");
+  var svgPaths = svg.selectAll("path")._groups[0];
+  searchButton.addEventListener("click",function(){
+    svg.selectAll("path").attr("class","tract");  
+    s = searchInput.value.toUpperCase();
+    for(var i = 0; i < svgPaths.length; i ++){
+     if(svgPaths[i].__data__.properties.scanombre == s)
+     {
+        console.log(svgPaths[i].__data__.properties.scanombre + "=" + searchInput.value);
+        ul.html("<h3>"+ svgPaths[i].__data__.properties.scanombre + "</h3>");
+        console.log(svgPaths[i].classList);
+        svgPaths[i].classList.remove("tract");
+        svgPaths[i].classList.add("selected");
+        searchInput.value = "";
+        createCircle();
+     } 
+   }
+  });
+    
+  });
+  
+  </script>
+
+</body>
+
+
+
