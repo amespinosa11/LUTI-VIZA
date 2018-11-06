@@ -15,4 +15,4 @@ Este proyecto se encuentra desplegado con githubpages. Para visualizarlo ingresa
 Ana Maria Espinosa
 
 ## Licencia
-This project is licensed under the MIT License - see the LICENSE.md file for details
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/amespinosa11/LUTI-VIZA/blob/master/LICENSE) file for details
