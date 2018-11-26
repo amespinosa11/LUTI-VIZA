@@ -22,6 +22,10 @@
   .info {
     margin-top: 20px;
   }
+  #image {
+  	width: 200px;
+  	height: 100px;
+  }
   canvas {
   width: 100%;
   background-color: white;
@@ -49,12 +53,26 @@
           <div class="col-4">
             <button id="searchButton" class="btn btn-dark">Buscar</button>
           </div>
-          <div class="col-4"></div>
+          <div class="col-4">
+          	<img id="image" class="rounded float-right" src="rosa.png">
+          </div>
         </div>
     </div>
     <!-- MAP CONTAINER -->
     <svg></svg>
-    <div id="zone-name"></div>
+    <div class="row">
+    	<div class="col-4">
+    		<div id="zone-name"></div>
+    	</div>
+    	<div class="col-4">
+    		<div id="range-selector" class="form-group">
+			</div>
+    	</div>
+    	<div class="col-4">
+    		<div id="year"></div>
+    	</div>
+    </div>
+    
     <canvas id="myCanvas" resize="true"></canvas>
   </div>
   
@@ -135,6 +153,8 @@
   const height = 500;
   const margin = { top: 100, bottom:20, right: 10, left: 10};
   const ul = d3.select("#zone-name");
+  const rangeSelector = d3.select("#range-selector");
+  const year = d3.select("#year");
 
   const path = d3.geoPath();
   var projection = d3.geoTransverseMercator();
@@ -161,6 +181,14 @@
 
     svg.selectAll("path").on("click", function(d){
         ul.html("<h3>"+ d.properties.scanombre + "</h3>");
+        rangeSelector.html("<input type='range' id='range' class='form-control-range' id='formControlRange' min='2010' max='2030' value='2018'>");
+        year.html("<p>Año: <span id='yearRange'>2018</span></p>");
+        let yearRange = document.querySelector("#yearRange");
+        let range = document.querySelector("#range");
+	    range.oninput = function() {
+	    	yearRange.innerHTML = this.value;
+	    	createCircle();
+	    } 
         svg.selectAll("path").attr("class","tract");
         d3.select(this).attr("class","selected");
         createCircle();
@@ -174,6 +202,8 @@
       .style("fill","none")
       .style("stroke","#528B8B")
         .attr("d", path);
+
+       
 
   var searchButton = document.querySelector("#searchButton");
   var searchInput = document.querySelector("#searchInput");
