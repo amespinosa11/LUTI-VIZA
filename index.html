@@ -19,6 +19,25 @@
   .tract:hover {
     fill: #FF7F50;
   }
+  .circle {
+    fill: #F7FE2E;
+    margin-left: 10px;
+  }
+  .circle-text {
+    background-color: #F2F5A9;
+  }
+  .circle:hover {
+    fill: #FF7F50;
+  }
+  .circle2 {
+    fill: #58FA58;
+  }
+  .circle2-text {
+    background-color: #BCF5A9;
+  }
+  .circle2:hover {
+     fill: #FF7F50;
+  }
   .info {
     margin-top: 20px;
   }
@@ -26,12 +45,18 @@
   	width: 200px;
   	height: 100px;
   }
-  canvas {
-  width: 100%;
-  background-color: white;
-}
-
-
+  #zone-name {
+    margin-top:10px;
+    margin-bottom:10px;
+  }
+  #time-line {
+    margin-right: 30px;
+    margin-left: 30px;
+  }
+  #zone-pm {
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
   </style>
 
 
@@ -40,41 +65,57 @@
 </head>
 <body>
   <div class="container">
-    <div class="info">
-      <h3>¿Cómo se comporta la distribución del CO2, el Material Particulado(PM) y otras variables 
-      en las diferentes zonas en Bogotá?</h3>
-      <p>A continuación se muestra un mapa de Bogotá dividido por barrios y al oprimir sobre un
-        barrio se puede observar la distribución de estas variables en esta zona. También se puede utilizar la barra de
-        busqueda para encontrar un barrio por su nombre. Los datos del mapa de Bogotá son sacados de la página de Uber(<a href="https://movement.uber.com/explore/bogota/travel-times/query?ag=cadastral&cd=&dt%5Bdr%5D%5Bed%5D=2018-01-31&dt%5Bdr%5D%5Bsd%5D=2018-01-01&dt%5Btpb%5D=ALL_DAY&dt%5Bwd%3B%5D=1%2C2%2C3%2C4%2C5%2C6%2C7&lang=es-CO&lat.=4.598056&lng.=-74.075833&sa%3B=&sdn=&si=183&ti=&z.=12">Uber Movements Bogota</a>). Los datos de la distribución de las variables en cada zona se generan aleatoriamente.</p>
-        <div class="row">
-          <div class="col-4">
-            <input id="searchInput" class="form-control" type="text" name="zone" placeholder="Buscar por nombre">
-          </div>
-          <div class="col-4">
-            <button id="searchButton" class="btn btn-dark">Buscar</button>
-          </div>
-          <div class="col-4">
-          	<img id="image" class="rounded float-right" src="rosa.png">
-          </div>
-        </div>
-    </div>
-    <!-- MAP CONTAINER -->
-    <svg></svg>
     <div class="row">
-    	<div class="col-4">
-    		<div id="zone-name"></div>
-    	</div>
-    	<div class="col-4">
-    		<div id="range-selector" class="form-group">
-			</div>
-    	</div>
-    	<div class="col-4">
-    		<div id="year"></div>
-    	</div>
+      <div class="col-md-8">
+        <div class="info">
+          <h3>¿Cómo se comporta la distribución del CO2 y el Material Particulado(PM) 
+          en las diferentes zonas en Bogotá?</h3>
+          <p>A continuación se muestra el mapa de Bogotá dividido por barrios, al oprimir sobre uno de estos
+            se puede observar graficamente la distribución del CO2 y del Material Particulado en dicha zona en diferentes periodos de tiempo(años). El dato de la distribucción se visualiza ubicando el mouse sobre la barra deseada.
+            También se puede escribir el nombre del barrio en la barra de busqueda. </p>
+            <p>Fuente mapa de Bogotá:( <a href="https://movement.uber.com/explore/bogota/travel-times/query?ag=cadastral&cd=&dt%5Bdr%5D%5Bed%5D=2018-01-31&dt%5Bdr%5D%5Bsd%5D=2018-01-01&dt%5Btpb%5D=ALL_DAY&dt%5Bwd%3B%5D=1%2C2%2C3%2C4%2C5%2C6%2C7&lang=es-CO&lat.=4.598056&lng.=-74.075833&sa%3B=&sdn=&si=183&ti=&z.=12">Uber Movements Bogota</a>). Los datos de la distribución del CO2 y del Material Particulado que se muestran están dados a manera de ejemplo(Pendiente contar con los datos reales).
+            </p>
+            <div class="row">
+              <div class="col-4">
+                <input id="searchInput" class="form-control" type="text" name="zone" placeholder="Buscar por nombre">
+              </div>
+              <div class="col-4">
+                <button id="searchButton" class="btn btn-dark">Buscar</button>
+              </div>
+              <div class="col-4">
+                <!--<img id="image" class="rounded float-right" src="rosa.png">-->
+              </div>
+            </div>
+            <div id="zone-name"></div>
+            <div>
+              <div id="zone-co2"></div>
+              <svg id="co2Circles" width="720" height="120"></svg>
+              <span id="time-line"></span>
+              <span id="time-line"></span>
+              <span id="time-line"></span>
+              <span id="time-line"></span>
+              <span id="time-line"></span>
+              <span id="time-line"></span>
+              <span id="time-line"></span>
+            </div>
+            <div id="zone-pm"></div>
+            <svg id="pmCircles" width="720" height="120"></svg>
+            <span id="time-line"></span>
+            <span id="time-line"></span>
+            <span id="time-line"></span>
+            <span id="time-line"></span>
+            <span id="time-line"></span>
+            <span id="time-line"></span>
+            <span id="time-line"></span>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="info">
+          <!-- MAP CONTAINER -->
+          <svg id="map"></svg>
+        </div>
+      </div>
     </div>
-    
-    <canvas id="myCanvas" resize="true"></canvas>
-  </div>
   
   
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -148,11 +189,13 @@
     }
     
 
-  var svg = d3.select("svg");
-  const width = 1000;
-  const height = 500;
+  var svg = d3.select("#map");
+  const width = 400;
+  const height = 600;
   const margin = { top: 100, bottom:20, right: 10, left: 10};
   const ul = d3.select("#zone-name");
+  const co2 = d3.select("#zone-co2");
+  const pm = d3.select("#zone-pm");
   const rangeSelector = d3.select("#range-selector");
   const year = d3.select("#year");
 
@@ -165,7 +208,7 @@
     svg.style("width",width);
     svg.style("height",height);
   
-    path.projection(projection.rotate([0,0,-40]));
+    path.projection(projection.rotate([0,0,8]));
     path.projection(projection.fitSize([width, height], data));
     
 
@@ -181,17 +224,74 @@
 
     svg.selectAll("path").on("click", function(d){
         ul.html("<h3>"+ d.properties.scanombre + "</h3>");
-        rangeSelector.html("<input type='range' id='range' class='form-control-range' id='formControlRange' min='2010' max='2030' value='2018'>");
-        year.html("<p>Año: <span id='yearRange'>2018</span></p>");
-        let yearRange = document.querySelector("#yearRange");
-        let range = document.querySelector("#range");
-	    range.oninput = function() {
-	    	yearRange.innerHTML = this.value;
-	    	createCircle();
-	    } 
         svg.selectAll("path").attr("class","tract");
         d3.select(this).attr("class","selected");
-        createCircle();
+        let timeLine = document.querySelectorAll("#time-line");
+        let y = 2000;
+        for(let i of timeLine){
+          i.innerHTML ="<em>" + y + "</em>";
+          y+= 10;
+          if(y > 2060){ y = 2000};
+        }
+        co2.html("<h6 class='circle-text'>CO2<em>(Particulas Por Millón/Año)</em></h6>");
+        pm.html("<h6 class='circle2-text'>PM<em>(Micrómetros/Año)</em></h6>");
+        let svgCircles = d3.select("#co2Circles");
+        if(svgCircles.html().trim() !== ""){
+          svgCircles.html(" ");
+        }
+        
+
+
+
+        let svgCirclesPM = d3.select("#pmCircles");
+        if(svgCirclesPM.html().trim() !== ""){
+          svgCirclesPM.html(" ");
+        }
+        let data1 = [180, 220, 330, 400, 500, 500, 500];
+        let data2 = [180, 180, 180, 300, 300, 500, 500];
+        let data3 = [500, 310, 250, 270, 180, 110, 50];
+        let data4 = [180, 500, 120, 400, 310, 310, 500];
+
+        function data(){
+          let i = Math.floor(Math.random() * (4 - 1)) + 1;
+          console.log(i);
+          if(i === 1){
+            return data1;
+          } else if(i === 2) {
+            return data2;
+          } else if(i === 3){
+            return data3;
+          } else {
+            return data4;
+          }
+
+        }  
+        var circle = svgCircles.selectAll("rect")
+            .data(data() )
+            .enter().append("rect")
+              .attr("y", function(d){return (100-(d/4))})
+              .attr("x", function(d, i) { return i * 100 + 30; })
+              .attr("width", 30)
+              .attr("height", function(d) { return d/4; })
+              .attr("class", "circle")
+            .append("title")
+              .text(function(d) { 
+               return d + " Particulas Por Millón";
+                });
+        var circle2 = svgCirclesPM.selectAll("rect")
+            .data(data() )
+            .enter().append("rect")
+              .attr("y", function(d){return (100-(d/4))})
+              .attr("x", function(d, i) { return i * 100 + 30; })
+              .attr("width", 30)
+              .attr("height", function(d) { return d/4; })
+              .attr("class", "circle2")
+            .append("title")
+              .text(function(d) { 
+               return d + " Micrómetros";
+                });
+
+
       });      
 
   //console.log(svg.selectAll("path").length);
@@ -203,6 +303,17 @@
       .style("stroke","#528B8B")
         .attr("d", path);
 
+  // BUBBLE CHART
+  var bubbleChart = function () {
+    var width = 600,
+    height = 400;
+
+    function chart(selection){
+        // you gonna get here
+    }
+
+    return chart;
+  }
        
 
   var searchButton = document.querySelector("#searchButton");
