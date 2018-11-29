@@ -72,23 +72,36 @@
           en las diferentes zonas en Bogotá?</h3>
           <p>A continuación se muestra el mapa de Bogotá dividido por barrios, al oprimir sobre uno de estos
             se puede observar graficamente la distribución del CO2 y del Material Particulado en dicha zona en diferentes periodos de tiempo(años). El dato de la distribucción se visualiza ubicando el mouse sobre la barra deseada.
-            También se puede escribir el nombre del barrio en la barra de busqueda. </p>
+            <!--También se puede escribir el nombre del barrio en la barra de busqueda.--> </p>
             <p>Fuente mapa de Bogotá:( <a href="https://movement.uber.com/explore/bogota/travel-times/query?ag=cadastral&cd=&dt%5Bdr%5D%5Bed%5D=2018-01-31&dt%5Bdr%5D%5Bsd%5D=2018-01-01&dt%5Btpb%5D=ALL_DAY&dt%5Bwd%3B%5D=1%2C2%2C3%2C4%2C5%2C6%2C7&lang=es-CO&lat.=4.598056&lng.=-74.075833&sa%3B=&sdn=&si=183&ti=&z.=12">Uber Movements Bogota</a>). Los datos de la distribución del CO2 y del Material Particulado que se muestran están dados a manera de ejemplo(Pendiente contar con los datos reales).
             </p>
             <div class="row">
-              <div class="col-4">
-                <!--<input id="searchInput" class="form-control" type="text" name="zone" placeholder="Buscar por nombre">-->
-              </div>
-              <div class="col-4">
-                <!--<button id="searchButton" class="btn btn-dark">Buscar</button>-->
-              </div>
               <div class="col-4">
                 <select id="mySelect" class="form-control" name="select">
                   <option value="co2" selected>Dioxido de carbono</option>
                   <option value="pm">Material Particulado</option>
                 </select>
+                <!--<input id="searchInput" class="form-control" type="text" name="zone" placeholder="Buscar por nombre">-->
               </div>
-            </div>
+              <div class="col-6">
+                <div class="row border" style="height: 20px;">
+                  <div id="color-scale" class="col"></div>
+                  <div id="color-scale" class="col"></div>
+                  <div id="color-scale" class="col"></div>
+                  <div id="color-scale" class="col"></div>
+                  <div id="color-scale" class="col"></div>
+                </div>
+                <div class="row" style="height: 20px;">
+                  <div class="col">100</div>
+                  <div class="col">200</div>
+                  <div class="col">300</div>
+                  <div class="col">400</div>
+                  <div class="col">500</div>
+                </div>
+              </div>
+            <div class="col-2">
+              <div id="measure">PPM</div>
+            </div>    
             <div id="zone-name"></div>
             <div>
               <div id="zone-co2"></div>
@@ -101,17 +114,20 @@
               <span id="time-line"></span>
               <span id="time-line"></span>
             </div>
-            <div id="zone-pm"></div>
-            <svg id="pmCircles" width="720" height="120"></svg>
-            <span id="time-line"></span>
-            <span id="time-line"></span>
-            <span id="time-line"></span>
-            <span id="time-line"></span>
-            <span id="time-line"></span>
-            <span id="time-line"></span>
-            <span id="time-line"></span>
+            <div>
+              <div id="zone-pm"></div>
+              <svg id="pmCircles" width="720" height="120"></svg>
+              <span id="time-line"></span>
+              <span id="time-line"></span>
+              <span id="time-line"></span>
+              <span id="time-line"></span>
+              <span id="time-line"></span>
+              <span id="time-line"></span>
+              <span id="time-line"></span>
+            </div>
         </div>
       </div>
+    </div>
       <div class="col-md-4">
         <div class="info">
           <!-- MAP CONTAINER -->
@@ -119,7 +135,8 @@
         </div>
       </div>
     </div>
-  
+  </div>
+
   
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
@@ -183,7 +200,31 @@
         csvData2.push(i);
       }
     });
+  const colors1 = ["#F2F5A9","#F3F781","#F4FA58","#F7FE2E","#AEB404"];
+  const colors2 = ["#D8F6CE","#81F79F","#58FA58","#04B45F","#088A29"];
 
+  let colorScale = d3.selectAll("#color-scale")._groups[0];
+  let measure = d3.select("#measure");
+
+  function changeMeasure(variable){
+    if(variable==="co2"){
+      measure.html("PPM");
+    } else {
+      measure.html("Micrómetros");
+    }
+  }
+
+  function colorScaleFunction(variable){
+      for(let i = 0; i < colorScale.length; i++){
+        if(variable==="co2"){
+          colorScale[i].style.background = colors1[i];
+        } else {
+          colorScale[i].style.background = colors2[i];
+        }   
+    }
+  }
+  
+  colorScaleFunction("co2");
 
   d3.json("bogota_cadastral.json", function(error, data) {
     if (error) throw error;
@@ -232,7 +273,9 @@
       e.preventDefault();
       e.stopPropagation();
       currenValue = e.currentTarget.value;
-      changeColor(e.currentTarget.value);
+      changeColor(currenValue);
+      colorScaleFunction(currenValue);
+      changeMeasure(currenValue);
     }
 
     
@@ -356,6 +399,7 @@
     }
   }
 
+  /*
   searchButton.addEventListener("click",function(){
     svg.selectAll("path").attr("class","tract");  
     s = searchInput.value.toUpperCase();
@@ -453,6 +497,7 @@
      } 
    }
   });
+  */
     
   });
 
